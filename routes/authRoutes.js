@@ -53,6 +53,7 @@ router.post('/signup', async (req, res) => {
 // @route   POST /api/auth/signin
 // @access  Public
 router.post('/signin', async (req, res) => {
+    console.log("Signin request body:", req.body); // Debugging line to check request body
     const { username, password } = req.body;
 
     if (!username || !password) {
