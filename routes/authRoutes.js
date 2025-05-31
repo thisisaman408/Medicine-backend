@@ -121,4 +121,41 @@ router.get('/me', protect, async (req, res) => {
 });
 
 
+// @desc    Update user's notification sound preference
+// @route   PUT /api/auth/settings/notificationsound
+// @access  Private
+router.put('/settings/notificationsound', protect, async (req, res) => {
+    const { soundName } = req.body;
+
+    if (typeof soundName !== 'string') {
+        return res.status(400).json({ message: 'Sound name must be a string.' });
+    }
+
+    // Optional: Validate soundName against a list of available sounds if you have a predefined list
+    // const availableSounds = ['default', 'ringtone.mp3', 'alert.wav'];
+    // if (!availableSounds.includes(soundName)) {
+    //     return res.status(400).json({ message: 'Invalid sound name selected.' });
+    // }
+
+    try {
+        const user = await User.findById(req.user._id);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found.' });
+        }
+
+        user.notificationSound = soundName.trim() || 'default'; // Ensure it's not empty, fallback to default
+        await user.save();
+
+        res.json({
+            message: 'Notification sound updated successfully.',
+            notificationSound: user.notificationSound
+        });
+
+    } catch (error) {
+        console.error("Update notification sound error:", error);
+        res.status(500).json({ message: 'Server error updating notification sound.', error: error.message });
+    }
+});
+
+
 module.exports = router;
